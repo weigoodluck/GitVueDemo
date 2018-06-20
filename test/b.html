@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h2>常见概念</h2>
+    <ul>
+        <li>
+            <p>构造函数</p>
+        </li>
+        <li>
+            <p>构造函数-扩展</p>
+        </li>
+        <li>
+            <p>原型规则和示例</p>
+        </li>
+        <li>
+            <p>原型链</p>
+        </li>
+        <li>
+            <p>instanceof</p>
+        </li>
+    </ul>
+    <h2>构造函数</h2>
+    <p>任何一个函数都可以被new，new了之后，就成了构造方法。</p>
+    <p>如下：</p>
+    <p>```javascript function Foo(name, age) { this.name = name; this.age = age; //retrun this; //默认有这一行。new一个构造函数，返回一个对象</p>
+    <pre><code>}
+    
+    var fn1 = new Foo('smyhvae', 26);
+    var fn2 = new Foo('vae',30);    //new 多个实例对象
+    </code></pre>
+    
+    <p>```</p>
+    <p>与普通函数相比，构造函数有以下明显特点：</p>
+    <ul>
+        <li>
+            <p>用new关键字调用。</p>
+        </li>
+        <li>
+            <p>不需要用return显式返回值的，默认会返回this，也就是新的实例对象。</p>
+        </li>
+        <li>
+            <p>建议函数名的首字母大写，与普通函数区分开。</p>
+        </li>
+    </ul>
+    <p>参考链接：</p>
+    <ul>
+        <li>
+            <a href="http://www.cnblogs.com/SheilaSun/p/4398881.html">JavaScript中的普通函数与构造函数</a>
+        </li>
+    </ul>
+    <p>当new之后，this会先变成一个空对象，然后通过
+        <code>this.name = name</code>来赋值。</p>
+    <h3>构造函数的扩展</h3>
+    <p>
+        <img src="http://img.smyhvae.com/20180306_1633.png" />
+    </p>
+    <p>上图中发现，数组、对象、函数也有构造函数，它们的构造函数是Array、Object、funtion。实际开发中，都推荐前面的书写方式。</p>
+    <h2>原型规则</h2>
+    <p>原型规则是学习原型链的基础。原型规则有五条，下面来讲解。</p>
+    <h3>规则1</h3>
+    <p>所有的引用类型（数组、对象、函数），都具有对象特性，都可以
+        <strong>自由扩展属性</strong>。null除外。</p>
+    <p>举例：</p>
+    <p>
+        <img src="http://img.smyhvae.com/20180306_1651.png" />
+    </p>
+    <h3>规则2</h3>
+    <p>所有的
+        <strong>引用类型</strong>（数组、对象、函数），都有一个
+        <code>_proto_</code>属性，属性值是一个
+        <strong>普通的对象</strong>。
+        <code>_proto_</code>的含义是隐式原型。</p>
+    <p>
+        <img src="http://img.smyhvae.com/20180306_1656.png" />
+    </p>
+    <p>其实，规则2是规则1的特例，只不过，js语法帮我们自动加了 规则2。</p>
+    <h3>规则三</h3>
+    <p>所有的
+        <strong>函数</strong>（不包括数组、对象），都有一个
+        <code>protype</code>属性，属性值是一个
+        <strong>普通的对象
+            <strong>。
+                <code>protype</code>的含义是</strong>显式原型</strong>。（实例没有这个属性）</p>
+    <p>
+        <img src="http://img.smyhvae.com/20180306_1659.png" />
+    </p>
+    <h3>规则四</h3>
+    <p>所有的
+        <strong>引用类型</strong>（数组、对象、函数），
+        <code>_proto_</code>属性指向它的
+        <strong>构造函数</strong>的
+        <code>protype</code>值。</p>
+    <p>
+        <img src="http://img.smyhvae.com/20180306_1701.png" />
+    </p>
+    <p>总结：以上四条，要先理解清楚，然后再来看下面的第五条。</p>
+    <h3>规则五</h3>
+    <p>当试图获取一个对象的某个属性时，如果这个对象本身没有这个属性，那么会去它的
+        <code>_proto_</code>中寻找（即它的构造函数的
+        <code>protype</code>）。</p>
+    <p>
+        <code>举例代码1</code>：</p>
+    <p>```javascript //创建方法 function Foo(name) { this.name = name; }
+    </p>
+    <pre><code>Foo.prototype.alertName = function () {// 既然 Foo.prototype 是普通的对象，那也允许给它添加额外的属性 alertName
+        console.log(this.name);
+    }
+    
+    
+    var fn = new Foo('smyhvae');
+    fn.printName = function () {
+        console.log(this.name);
+    }
+    
+    //测试
+    fn.printName();   //输出结果：smyhvae
+    fn.alertName(); //输出结果：smyhvae
+    </code></pre>
+    
+    <p>```</p>
+    <p>上方代码中，虽然 alertName 不是 fn 自身的属性，但是会从它的构造函数的
+        <code>protype</code>里面找。</p>
+    <p>
+        <strong>扩展：</strong>遍历循环对象自身的属性</p>
+    <p>我们知道，
+        <code>for ... in</code>循环可以遍历对象。针对上面的那个fn对象，它自身有两个属性：
+        <code>name</code>、
+        <code>printName</code>，另外从原型中找到了第三个属性
+        <code>alertName</code>。现在，如果我们对fn进行遍历，能遍历到两个属性还是三个属性呢？</p>
+    <p>答案：两个。因为，
+        <strong>高级浏览器中已经在
+            <code>for ... in</code>循环中屏蔽了来自原型的属性。但是，为了保证代码的健壮性，我们最好自己加上判断</strong>，手动将第三个属性屏蔽掉：</p>
+    <p>```javascript for (var item in fn) { if (fn.hasOwnProperty(item)) { console.log(item); } }
+    </p>
+    <p>```</p>
+    <h2>原型链</h2>
+    <p>还是拿上面的
+        <code>举例代码1</code>举例，如果此时在最后面加一行代码：</p>
+    <p>
+        <code>fn.toString();   //去 fn._proto_._proto 中查找 toString()方法</code>
+    </p>
+    <p>上面的代码中，fn直接调用了 toString()方法，这是因为它通过
+        <strong>原型链</strong>，去
+        <code>_proto_</code>的
+        <code>_proto_</code>里找到了
+        <code>Object</code>，而
+        <code>Object</code>是由
+        <code>toString()</code>方法的。</p>
+    <h3>instanceof</h3>
+    <p>格式：</p>
+    <p>
+        <code>javascript
+    	对象 instanceof 构造函数</code>
+    </p>
+    <p>
+        <code>instanceof</code>的作用：用于判断
+        <strong>引用类型</strong>属于哪个
+        <strong>构造函数</strong>。</p>
+    <p>例1：判断一个变量是否为数组：
+        <code>变量 instanceof Array</code>
+    </p>
+    <p>例2：</p>
+    <p>```javascript function Person(){ }
+    </p>
+    <pre><code>//p---&gt;Person.prototype---&gt;Object.prototype---&gt;null
+    var p = new Person();
+    //构造函数的**原型**是否在 p 对象的原型链上！
+    console.log(p instanceof Person);
+    </code></pre>
+    
+    <p>```</p>
+    <p>例3：</p>
+    <p>
+        <code>javascript
+    	fn instanceof Foo</code>
+    </p>
+    <p>上面这句话，判断逻辑是：
+        <strong>fn 的
+            <code>_proto_</code>一层一层往上找，看能否对应到 Foo.prototype</strong>。</p>
+    <p>原型链如下：（重要）</p>
+    <p>
+        <img src="http://img.smyhvae.com/20180306_1853.png" />
+    </p>
+    <p>注意，Object这个构造方法的显式原型是null，这是一个特例。</p>
+    <h2>常见题目</h2>
+    <ul>
+        <li>
+            <p>如何准确判断一个变量时数组类型</p>
+        </li>
+        <li>
+            <p>写一个原型链继承的例子</p>
+        </li>
+        <li>
+            <p>描述 new 一个对象的过程</p>
+        </li>
+        <li>
+            <p>zepto(或其他框架)源码中如何使用原型链</p>
+        </li>
+    </ul>
+    <p>下面分别讲解。</p>
+    <h3>题目一：如何准确判断一个变量时数组类型</h3>
+    <p>答案：</p>
+    <p>```javascript var arr1 = [];</p>
+    <pre><code>console.log(arr1 instanceof Array); //打印结果：true。
+    console.log(typeof arr1);           //打印结果：object。提示：typeof 方法无法判断是否为数组
+    </code></pre>
+    
+    <p>```</p>
+    <p>上方代码表明，只能通过 instanceof 来判断是否为数组。而 typeof 的打印结果是 object。</p>
+    <h3>题目二：写一个原型链继承的例子</h3>
+    <p>来看个基础的代码：</p>
+    <p>
+        <img src="http://img.smyhvae.com/20180306_1931.png" />
+    </p>
+    <p>上面这个例子是基础，但是，在回答面试官的问题时，不要写上面的例子。要写成下面这个例子：（更贴近实战）</p>
+    <p>
+        <strong>举例：</strong>写一个封装DOM查询的例子</p>
+    <blockquote>
+        <p>这个例子有点像 jQuery 操作DOM节点。</p>
+    </blockquote>
+    <p>表示这个例子，略难。</p>
+    <h3>题目三：描述 new 一个对象的过程</h3>
+    <p>（1）创建一个新对象</p>
+    <p>（2）this 指向这个新对象</p>
+    <p>（3）执行代码（对this 赋值）</p>
+    <p>（4）返回this</p>
+    <p>参考链接：</p>
+    <ul>
+        <li>
+            <a href="https://my.oschina.net/u/2600761/blog/1524617">原型、原型链、继承模式</a>
+        </li>
+    </ul>
+
+</body>
+</html>
